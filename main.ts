@@ -23,18 +23,20 @@ app.post('/create', async (c) => {
   const item = body.item; // Extract the "item" field
   if (item) {
     await collection.insertOne({ item }); // Insert the item into the database
-    const html = `<div class="item">${item}</div>`; // HTML for the new item
-    return c.html(html); // Return the HTML fragment
+    // const html = `<div class="item">${item}</div>`; // HTML for the new item
+    // return c.html(html); // Return the HTML fragment
+    // return a 201 response
+    return c.text('Item created successfully', 201); // Return a success message
   }
   return c.text('Invalid input', 400); // Return an error for invalid input
 });
 
-// Endpoint to fetch existing items
-app.get('/items', async (c) => {
-  const items = await collection.find().toArray();
-  const html = items.map((item) => `<div class="item">${item.item}</div>`).join('');
-  return c.html(html);
-});
+// // Endpoint to fetch existing items
+// app.get('/items', async (c) => {
+//   const items = await collection.find().toArray();
+//   const html = items.map((item) => `<div class="item">${item.item}</div>`).join('');
+//   return c.html(html);
+// });
 
 // Streaming endpoint for live updates
 app.get('/stream', (c) => {
