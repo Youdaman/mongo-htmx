@@ -10,15 +10,6 @@ await client.connect();
 const db = client.db(dbName);
 const collection = db.collection('items');
 
-const changeStream = collection.watch();
-changeStream.on('error', (error) => {
-  console.error('Change stream error:', error);
-});
-changeStream.on('change', (change) => {
-  console.log('Received a change event:', change);
-});
-console.log('Change stream created');
-
 const app = new Hono()
 
 // Serve the static index.html file
@@ -49,20 +40,57 @@ app.get('/items', async (c) => {
 
 // let id = 0
 
-app.get('/sse', (c) => {
+// app.get('/sse', (c) => {
+//   return streamSSE(c, async (stream) => {
+//     while (true) {
+//       const message = `It is ${new Date().toISOString()}`
+//       await stream.writeSSE({
+//         data: message,
+//         event: 'EventName',
+//         // id: String(id++),
+//       })
+//       await stream.sleep(1000)
+//     }
+//   })
+// })
+
+app.get('/stream', (c) => {
+  console.log('Received GET request to /stream for SSE');
+  const changeStream = collection.watch();
+  // changeStream.on('error', (error) => {
+  //   console.error('Change stream error:', error);
+  // });
+  // changeStream.on('change', (change) => {
+  //   console.log('Received a change event:', change);
+  // });
+  console.log('Change stream created');
+
   return streamSSE(c, async (stream) => {
-    while (true) {
+    for await (const change of changeStream) {
+      console.log('Received a change event in /stream:', change);
+      if ('fullDocument' in change && change.fullDocument) {
+        const item = change.fullDocument;
+        const html = `<div class="item">${item.item}</div>`;
+        // Send the data in the correct SSE format using streamSSE
+        await stream.writeSSE({
+          data: html,
+          event: 'message'
+        });
+      }
+    }
+    // changeStream.on('error', (error) => {
+    //   console.error('Change stream error:', error);
+    // });
+    changeStream.on('change', async (change) => {
+      console.log('Received a change event:', change);
       const message = `It is ${new Date().toISOString()}`
       await stream.writeSSE({
         data: message,
         event: 'EventName',
-        // id: String(id++),
       })
-      await stream.sleep(1000)
-    }
+    });
   })
 })
-
 
 // // Streaming endpoint for live updates
 // app.get('/stream', async (c) => {
