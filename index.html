@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTMX + PicoCSS</title>
+  <link rel="stylesheet" href="https://unpkg.com/picocss">
+  <script src="https://unpkg.com/htmx.org"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>HTMX + MongoDB Demo</h1>
+    <form hx-post="/create" hx-target="#items" hx-swap="beforeend">
+      <label for="item">New Item:</label>
+      <input type="text" id="item" name="item" required>
+      <button type="submit">Add</button>
+    </form>
+    <!-- <div id="items" hx-get="/items" hx-trigger="load, post:/create" hx-swap="outerHTML"></div> -->
+    <h1>Items</h1>
+    <div id="items"></div>
+    <h1>Stream</h1>
+    <div id="stream-container" hx-get="/stream" hx-trigger="load" hx-swap="beforeend"></div>
+  </main>
+</body>
+</html>

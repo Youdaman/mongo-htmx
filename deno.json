@@ -1,0 +1,15 @@
+{
+  "imports": {
+    "hono": "jsr:@hono/hono@^4.7.5",
+    "mongodb": "npm:mongodb"
+  },
+  "tasks": {
+    "mongo-start": "mongod --replSet rs0 --port 27017 --dbpath ./tmp",
+    "mongo-init": "mongosh realtime --eval \"rs.initiate()\"",
+    "dev": "deno run -A --watch main.ts"
+  },
+  "compilerOptions": {
+    "jsx": "precompile",
+    "jsxImportSource": "hono/jsx"
+  }
+}
