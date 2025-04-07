@@ -13,17 +13,17 @@
 <body>
   <main class="container">
     <h1>HTMX + MongoDB Demo</h1>
-    <form hx-post="/create" hx-swap="none">
+    <form hx-post="/create" hx-swap="none" hx-on::after-request="this.reset()">
       <label for="item">New Item:</label>
       <input type="text" id="item" name="item" required>
       <button type="submit">Add</button>
     </form>
     <!-- <div id="items" hx-get="/items" hx-trigger="load" hx-swap="outerHTML"></div> -->
+    <!-- <div hx-ext="sse" sse-connect="/sse" sse-swap="items-update"></div>
+    <div hx-ext="sse" sse-connect="/sse" sse-swap="time-update"></div> -->
     <div hx-ext="sse" sse-connect="/sse">
-      <div hx-get="/items" hx-trigger="load,sse:items-update"></div>
+      <div hx-get="/items?pp=5" hx-trigger="load,sse:items-update"></div>
     </div>
-    <!-- <div hx-ext="sse" sse-connect="/sse" sse-swap="items-update"></div> -->
-    <!-- <div hx-ext="sse" sse-connect="/sse" sse-swap="time-update"></div> -->
   </main>
 </body>
 
