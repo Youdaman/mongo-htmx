@@ -53,25 +53,65 @@ app.get('/sse', (c) => {
   })
 })
 
-app.get('/stream', (c) => {
-  console.log('Received GET request to /stream for SSE');
-  const changeStream = collection.watch();
-  console.log('Change stream created');
+// Global list of subscribers
+interface SSEClient {
+  id: number;
+  send: (data: string, event?: string) => Promise<void>;
+}
 
-  return streamSSE(c, async (stream) => {
-    for await (const change of changeStream) {
-      console.log('Received a change event in /stream:', change);
-      if ('fullDocument' in change && change.fullDocument) {
-        const item = change.fullDocument;
-        const html = `<div class="item">${item.item}</div>`;
-        await stream.writeSSE({
-          data: html,
-          event: 'message'
-        });
+const subscribers = new Set<SSEClient>();
+let clientId = 0;
+
+// Start a single change stream that broadcasts to all subscribers
+async function startChangeStream() {
+  const changeStream = collection.watch();
+  console.log('Global change stream created');
+  for await (const change of changeStream) {
+    console.log('Change event detected:', change);
+    if ('fullDocument' in change && change.fullDocument) {
+      const item = change.fullDocument;
+      const html = `<div class="item">${item.item}</div>`;
+      // Broadcast the new item to all connected clients
+      for (const client of subscribers) {
+        try {
+          await client.send(html, 'message');
+        } catch (e) {
+          console.log(`Error sending to client ${client.id}:`, e);
+        }
       }
     }
-  })
-})
+  }
+}
+startChangeStream(); // Launch the global change stream in the background
+
+// Modify the /stream endpoint to add clients to subscribers
+app.get('/stream', (c) => {
+  console.log('Received GET request to /stream for SSE pub-sub');
+
+  return streamSSE(c, async (stream) => {
+    // Create an SSEClient for this connection
+    const client: SSEClient = {
+      id: clientId++,
+      send: async (data: string, event?: string) => {
+        await stream.writeSSE({ data, event: event || 'message' });
+      },
+    };
+
+    subscribers.add(client);
+    console.log('Client added:', client.id);
+    try {
+      // Wait indefinitely until the client disconnects (which will cause stream.sleep to throw an error)
+      while (true) {
+        await stream.sleep(1000);
+      }
+    } catch (e) {
+      // Client disconnected
+    } finally {
+      subscribers.delete(client);
+      console.log('Client removed:', client.id);
+    }
+  });
+});
 
 // Start the server
 Deno.serve(app.fetch)
