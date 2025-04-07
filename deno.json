@@ -1,7 +1,9 @@
 {
   "imports": {
-    "hono": "jsr:@hono/hono@^4.7.5",
-    "mongodb": "npm:mongodb"
+    "mongodb": "npm:mongodb",
+    "hono": "npm:hono",
+    "zod": "npm:zod",
+    "@hono/zod-validator": "npm:@hono/zod-validator"
   },
   "tasks": {
     "mongo-rs-initiate": "mongosh realtime --eval \"if (rs.status().ok === 0) { rs.initiate(); } else { print('Replica set already initialized.'); }\"",

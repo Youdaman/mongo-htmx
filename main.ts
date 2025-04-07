@@ -2,6 +2,13 @@ import { Hono } from 'hono'
 import { serveStatic } from 'hono/deno'
 import { SSEStreamingApi, streamSSE } from 'hono/streaming'
 import { MongoClient } from 'mongodb'
+import { z } from 'zod'
+import { zValidator } from '@hono/zod-validator'
+
+const schema = z.object({
+  item: z.string().min(1, 'Item is required'),
+  createdAt: z.date().optional()
+})
 
 const url = 'mongodb://127.0.0.1:27017';
 const client = new MongoClient(url);
@@ -14,8 +21,9 @@ const app = new Hono()
 
 app.get('/', serveStatic({ path: './index.html' }))
 
-app.post('/create', async (c) => {
-  const body = await c.req.parseBody();
+app.post('/create', zValidator('form', schema), async (c) => {
+  // const body = await c.req.parseBody();
+  const body = c.req.valid('form')
   const item = body.item;
   console.log(`create item: ${item}`);
   if (item) {

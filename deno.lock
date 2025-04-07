@@ -1,15 +1,26 @@
 {
   "version": "4",
   "specifiers": {
-    "jsr:@hono/hono@^4.7.5": "4.7.5",
-    "npm:mongodb@*": "6.15.0"
-  },
-  "jsr": {
-    "@hono/hono@4.7.5": {
-      "integrity": "36a7e1b3db8a58e5dc2bd36a76be53346f0966e04c24c635c4d6f58875575b0a"
-    }
+    "npm:@hono/hello@*": "0.1.1_hono@4.7.5",
+    "npm:@hono/zod-validator@*": "0.4.3_hono@4.7.5_zod@3.24.2",
+    "npm:hono@*": "4.7.5",
+    "npm:mongodb@*": "6.15.0",
+    "npm:zod@*": "3.24.2"
   },
   "npm": {
+    "@hono/hello@0.1.1_hono@4.7.5": {
+      "integrity": "sha512-d3jYBIp8llR1Ap6tB1um0zA7gTv53FMMdvQoAcxwMx4pdLOgw9hLI1r91ojWw2+F6EbI1u7mXCqvbO6kBIFL/w==",
+      "dependencies": [
+        "hono"
+      ]
+    },
+    "@hono/zod-validator@0.4.3_hono@4.7.5_zod@3.24.2": {
+      "integrity": "sha512-xIgMYXDyJ4Hj6ekm9T9Y27s080Nl9NXHcJkOvkXPhubOLj8hZkOL8pDnnXfvCf5xEE8Q4oMFenQUZZREUY2gqQ==",
+      "dependencies": [
+        "hono",
+        "zod"
+      ]
+    },
     "@mongodb-js/saslprep@1.2.0": {
       "integrity": "sha512-+ywrb0AqkfaYuhHs6LxKWgqbh3I72EpEgESCw37o+9qPx9WTCkgDm2B+eMrwehGtHBWHFU4GXvnSCNiFhhausg==",
       "dependencies": [
@@ -27,6 +38,9 @@
     },
     "bson@6.10.3": {
       "integrity": "sha512-MTxGsqgYTwfshYWTRdmZRC+M7FnG1b4y7RO7p2k3X24Wq0yv1m77Wsj0BzlPzd/IowgESfsruQCUToa7vbOpPQ=="
+    },
+    "hono@4.7.5": {
+      "integrity": "sha512-fDOK5W2C1vZACsgLONigdZTRZxuBqFtcKh7bUQ5cVSbwI2RWjloJDcgFOVzbQrlI6pCmhlTsVYZ7zpLj4m4qMQ=="
     },
     "memory-pager@1.5.0": {
       "integrity": "sha512-ZS4Bp4r/Zoeq6+NLJpP+0Zzm0pR8whtGPf1XExKLJBAczGMnSi3It14OiNCStjQjM6NU1okjQGSxgEZN8eBYKg=="
@@ -70,12 +84,17 @@
         "tr46",
         "webidl-conversions"
       ]
+    },
+    "zod@3.24.2": {
+      "integrity": "sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ=="
     }
   },
   "workspace": {
     "dependencies": [
-      "jsr:@hono/hono@^4.7.5",
-      "npm:mongodb@*"
+      "npm:@hono/zod-validator@*",
+      "npm:hono@*",
+      "npm:mongodb@*",
+      "npm:zod@*"
     ]
   }
 }
