@@ -4,9 +4,13 @@
     "mongodb": "npm:mongodb"
   },
   "tasks": {
-    "mongo-start": "mongod --replSet rs0 --port 27017 --dbpath ./tmp",
-    "mongo-init": "mongosh realtime --eval \"rs.initiate()\"",
-    "dev": "deno run -A --watch main.ts"
+    "mongo-rs-initiate": "mongosh realtime --eval \"if (rs.status().ok === 0) { rs.initiate(); } else { print('Replica set already initialized.'); }\"",
+    "dev": {
+      "command": "deno run -A --watch main.ts",
+      "dependencies": [
+        "mongo-rs-initiate"
+      ]
+    }
   },
   "compilerOptions": {
     "jsx": "precompile",
