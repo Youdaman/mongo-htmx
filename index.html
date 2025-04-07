@@ -19,11 +19,8 @@
       <button type="submit">Add</button>
     </form>
     <div id="items" hx-get="/items" hx-trigger="load" hx-swap="outerHTML"></div>
-    <div hx-ext="sse" sse-connect="/stream" sse-swap="message">
-      Contents of this box will be updated in real time
-      with every SSE message received from the server.
-    </div>
-    <div hx-ext="sse" sse-connect="/sse" sse-swap="EventName"></div>
+    <!-- <div hx-ext="sse" sse-connect="/sse" sse-swap="message"></div> -->
+    <div hx-ext="sse" sse-connect="/sse" sse-swap="time-update"></div>
   </main>
 </body>
 
