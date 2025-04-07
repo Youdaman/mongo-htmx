@@ -54,11 +54,11 @@ app.get('/sse', async (c) => {
 
 // Broadcast updates to all clients at a fixed interval
 setInterval(async () => {
-  const message = `It is ${new Date().toISOString()}`;
+  const data = `It is ${new Date().toISOString()}`;
   for (const client of clients) {
     try {
       await client.stream.writeSSE({
-        data: message,
+        data,
         event: 'time-update',
       });
     } catch (err) {
@@ -67,5 +67,22 @@ setInterval(async () => {
     }
   }
 }, 1000);
+
+const changeStream = collection.watch();
+changeStream.on('change', async (change) => {
+  const data = change.fullDocument?.item;
+  for (const client of clients) {
+    try {
+      await client.stream.writeSSE({
+        data,
+        event: 'items-update',
+      });
+    } catch (err) {
+      console.log(`Error sending to client ${client.id}:`, err);
+      clients.delete(client);
+    }
+  }
+});
+
 
 Deno.serve(app.fetch)
