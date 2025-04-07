@@ -18,9 +18,12 @@
       <input type="text" id="item" name="item" required>
       <button type="submit">Add</button>
     </form>
-    <div id="items" hx-get="/items" hx-trigger="load" hx-swap="outerHTML"></div>
-    <div hx-ext="sse" sse-connect="/sse" sse-swap="items-update"></div>
-    <div hx-ext="sse" sse-connect="/sse" sse-swap="time-update"></div>
+    <!-- <div id="items" hx-get="/items" hx-trigger="load" hx-swap="outerHTML"></div> -->
+    <div hx-ext="sse" sse-connect="/sse">
+      <div hx-get="/items" hx-trigger="load,sse:items-update"></div>
+    </div>
+    <!-- <div hx-ext="sse" sse-connect="/sse" sse-swap="items-update"></div> -->
+    <!-- <div hx-ext="sse" sse-connect="/sse" sse-swap="time-update"></div> -->
   </main>
 </body>
 
