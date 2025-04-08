@@ -44,7 +44,7 @@ app.get('/items', async (c) => {
 const clients = new Set<{ id: number; stream: SSEStreamingApi }>();
 let clientId = 0;
 
-app.get('/sse', async (c) => {
+app.get('/sse', (c) => {
   return streamSSE(c, async (stream) => {
     const id = clientId++;
     const client = { id, stream };
