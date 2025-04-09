@@ -1,13 +1,14 @@
 import { Hono } from 'hono'
+import { Scalar } from '@scalar/hono-api-reference'
 import { serveStatic } from 'hono/deno'
 import { SSEStreamingApi, streamSSE } from 'hono/streaming'
 import { MongoClient } from 'mongodb'
-import { z } from 'zod'
-import { zValidator } from '@hono/zod-validator'
+import { date, object, optional, string } from 'valibot'
+import { vValidator } from '@hono/valibot-validator'
 
-const schema = z.object({
-  item: z.string().min(1, 'Item is required'),
-  createdAt: z.date().optional()
+const schema = object({
+  item: string(),
+  createdAt: optional(date()),
 })
 
 const url = 'mongodb://127.0.0.1:27017';
@@ -19,9 +20,14 @@ const collection = db.collection('items');
 
 const app = new Hono()
 
-app.get('/', serveStatic({ path: './index.html' }))
+// serve static files from the public directory
+app.get('*', serveStatic({ root: './static' }))
 
-app.post('/create', zValidator('form', schema), async (c) => {
+app.get('/scalar', Scalar({
+  url: './mcp.eligibility.check.medicare-1.0.0.yaml'
+}))
+
+app.post('/create', vValidator('form', schema), async (c) => {
   // const body = await c.req.parseBody();
   const body = c.req.valid('form')
   const item = body.item;

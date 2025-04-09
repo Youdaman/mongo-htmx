@@ -2,9 +2,13 @@
   "version": "4",
   "specifiers": {
     "npm:@hono/hello@*": "0.1.1_hono@4.7.5",
+    "npm:@hono/valibot-validator@*": "0.5.2_hono@4.7.5_valibot@1.0.0",
     "npm:@hono/zod-validator@*": "0.4.3_hono@4.7.5_zod@3.24.2",
+    "npm:@scalar/hono-api-reference@*": "0.8.0_hono@4.7.5",
+    "npm:@types/node@*": "22.12.0",
     "npm:hono@*": "4.7.5",
     "npm:mongodb@*": "6.15.0",
+    "npm:valibot@*": "1.0.0",
     "npm:zod@*": "3.24.2"
   },
   "npm": {
@@ -12,6 +16,13 @@
       "integrity": "sha512-d3jYBIp8llR1Ap6tB1um0zA7gTv53FMMdvQoAcxwMx4pdLOgw9hLI1r91ojWw2+F6EbI1u7mXCqvbO6kBIFL/w==",
       "dependencies": [
         "hono"
+      ]
+    },
+    "@hono/valibot-validator@0.5.2_hono@4.7.5_valibot@1.0.0": {
+      "integrity": "sha512-WbTr8PCFNAME0ale62rmmq+E8bGp5a7VPiVNmNT+Ue12GJE3Ax+CWBGtHhR0TzAEiloPvJND3IbjHIgtNtsqhw==",
+      "dependencies": [
+        "hono",
+        "valibot"
       ]
     },
     "@hono/zod-validator@0.4.3_hono@4.7.5_zod@3.24.2": {
@@ -27,6 +38,41 @@
         "sparse-bitfield"
       ]
     },
+    "@scalar/core@0.2.6": {
+      "integrity": "sha512-if8qr0McLFijNvKl3Vtv9CPrMsjijbxbDSlgXErr6Y45h8KsM2kVaVf0pzirh3daBD3y+Yl0sqtTVkpAelsoSw==",
+      "dependencies": [
+        "@scalar/types"
+      ]
+    },
+    "@scalar/hono-api-reference@0.8.0_hono@4.7.5": {
+      "integrity": "sha512-qpDeEj4YeB6+CJHt/ddj1KzDAYZfOmiD3QxOg0/t8IeWB1t4QImYySaWWzxIk9IoZpnOmaH2kq43GA/cfJ2Wfg==",
+      "dependencies": [
+        "@scalar/core",
+        "hono"
+      ]
+    },
+    "@scalar/openapi-types@0.2.0": {
+      "integrity": "sha512-waiKk12cRCqyUCWTOX0K1WEVX46+hVUK+zRPzAahDJ7G0TApvbNkuy5wx7aoUyEk++HHde0XuQnshXnt8jsddA==",
+      "dependencies": [
+        "zod"
+      ]
+    },
+    "@scalar/types@0.1.6": {
+      "integrity": "sha512-4GQ9VwyZm5WiOsinCIioGfByQWI+K8cY/jce9EoaJ906mXOyHfwp6lQF/ddnEJ4ptkflKkGdEQ6jm+6PnwlB5w==",
+      "dependencies": [
+        "@scalar/openapi-types",
+        "@unhead/schema",
+        "nanoid",
+        "type-fest",
+        "zod"
+      ]
+    },
+    "@types/node@22.12.0": {
+      "integrity": "sha512-Fll2FZ1riMjNmlmJOdAyY5pUbkftXslB5DgEzlIuNaiWhXd00FhWxVC/r4yV/4wBb9JfImTu+jiSvXTkJ7F/gA==",
+      "dependencies": [
+        "undici-types"
+      ]
+    },
     "@types/webidl-conversions@7.0.3": {
       "integrity": "sha512-CiJJvcRtIgzadHCYXw7dqEnMNRjhGZlYK05Mj9OyktqV8uVT8fD2BFOB7S1uwBE3Kj2Z+4UyPmFw/Ixgw/LAlA=="
     },
@@ -36,11 +82,21 @@
         "@types/webidl-conversions"
       ]
     },
+    "@unhead/schema@1.11.20": {
+      "integrity": "sha512-0zWykKAaJdm+/Y7yi/Yds20PrUK7XabLe9c3IRcjnwYmSWY6z0Cr19VIs3ozCj8P+GhR+/TI2mwtGlueCEYouA==",
+      "dependencies": [
+        "hookable",
+        "zhead"
+      ]
+    },
     "bson@6.10.3": {
       "integrity": "sha512-MTxGsqgYTwfshYWTRdmZRC+M7FnG1b4y7RO7p2k3X24Wq0yv1m77Wsj0BzlPzd/IowgESfsruQCUToa7vbOpPQ=="
     },
     "hono@4.7.5": {
       "integrity": "sha512-fDOK5W2C1vZACsgLONigdZTRZxuBqFtcKh7bUQ5cVSbwI2RWjloJDcgFOVzbQrlI6pCmhlTsVYZ7zpLj4m4qMQ=="
+    },
+    "hookable@5.5.3": {
+      "integrity": "sha512-Yc+BQe8SvoXH1643Qez1zqLRmbA5rCL+sSmk6TVos0LWVfNIB7PGncdlId77WzLGSIB5KaWgTaNTs2lNVEI6VQ=="
     },
     "memory-pager@1.5.0": {
       "integrity": "sha512-ZS4Bp4r/Zoeq6+NLJpP+0Zzm0pR8whtGPf1XExKLJBAczGMnSi3It14OiNCStjQjM6NU1okjQGSxgEZN8eBYKg=="
@@ -60,6 +116,9 @@
         "mongodb-connection-string-url"
       ]
     },
+    "nanoid@5.1.5": {
+      "integrity": "sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw=="
+    },
     "punycode@2.3.1": {
       "integrity": "sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg=="
     },
@@ -75,6 +134,15 @@
         "punycode"
       ]
     },
+    "type-fest@4.39.1": {
+      "integrity": "sha512-uW9qzd66uyHYxwyVBYiwS4Oi0qZyUqwjU+Oevr6ZogYiXt99EOYtwvzMSLw1c3lYo2HzJsep/NB23iEVEgjG/w=="
+    },
+    "undici-types@6.20.0": {
+      "integrity": "sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg=="
+    },
+    "valibot@1.0.0": {
+      "integrity": "sha512-1Hc0ihzWxBar6NGeZv7fPLY0QuxFMyxwYR2sF1Blu7Wq7EnremwY2W02tit2ij2VJT8HcSkHAQqmFfl77f73Yw=="
+    },
     "webidl-conversions@7.0.0": {
       "integrity": "sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g=="
     },
@@ -85,16 +153,20 @@
         "webidl-conversions"
       ]
     },
+    "zhead@2.2.4": {
+      "integrity": "sha512-8F0OI5dpWIA5IGG5NHUg9staDwz/ZPxZtvGVf01j7vHqSyZ0raHY+78atOVxRqb73AotX22uV1pXt3gYSstGag=="
+    },
     "zod@3.24.2": {
       "integrity": "sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ=="
     }
   },
   "workspace": {
     "dependencies": [
-      "npm:@hono/zod-validator@*",
+      "npm:@hono/valibot-validator@*",
+      "npm:@scalar/hono-api-reference@*",
       "npm:hono@*",
       "npm:mongodb@*",
-      "npm:zod@*"
+      "npm:valibot@*"
     ]
   }
 }
