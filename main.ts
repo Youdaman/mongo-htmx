@@ -1,4 +1,8 @@
 import { Hono } from 'hono'
+import { csrf } from 'hono/csrf'
+import { secureHeaders } from 'hono/secure-headers'
+import { compress } from 'hono/compress'
+import { logger } from 'hono/logger'
 import { Scalar } from '@scalar/hono-api-reference'
 import { serveStatic } from 'hono/deno'
 import { SSEStreamingApi, streamSSE } from 'hono/streaming'
@@ -19,6 +23,10 @@ const db = client.db(dbName);
 const collection = db.collection('items');
 
 const app = new Hono()
+app.use(csrf())
+app.use(secureHeaders())
+app.use(compress())
+app.use(logger())
 
 // serve static files from the public directory
 app.get('*', serveStatic({ root: './static' }))
@@ -31,7 +39,7 @@ app.post('/create', vValidator('form', schema), async (c) => {
   // const body = await c.req.parseBody();
   const body = c.req.valid('form')
   const item = body.item;
-  console.log(`create item: ${item}`);
+  // console.log(`create item: ${item}`);
   if (item) {
     await collection.insertOne({ item, createdAt: new Date() }); // Add createdAt field
     return c.text('Item created', 201);
@@ -41,7 +49,7 @@ app.post('/create', vValidator('form', schema), async (c) => {
 
 app.get('/items', async (c) => {
   const pp = c.req.query('pp') ? parseInt(String(c.req.query('pp'))) : 10;
-  console.log(`get items: ${pp}`);
+  // console.log(`get items: ${pp}`);
   const items = (await collection.find().sort({ createdAt: -1 }).limit(pp).toArray()).reverse();
   const html = items.map((item) => `<div class="item">${item.createdAt.toISOString()} - ${item.item}</div>`).join('');
   return c.html(html);
@@ -56,10 +64,10 @@ app.get('/sse', (c) => {
     const client = { id, stream };
     clients.add(client);
 
-    console.log(`Client added: ${id}, total clients: ${clients.size}`);
+    // console.log(`Client added: ${id}, total clients: ${clients.size}`);
 
     stream.onAbort(() => {
-      console.log(`Client removed: ${id}`);
+      // console.log(`Client removed: ${id}`);
       clients.delete(client);
     });
 
@@ -78,7 +86,7 @@ setInterval(async () => {
         event: 'time-update',
       });
     } catch (err) {
-      console.log(`Error sending to client ${client.id}:`, err);
+      // console.log(`Error sending to client ${client.id}:`, err);
       clients.delete(client);
     }
   }
@@ -108,7 +116,7 @@ changeStream.on('change', async (change) => {
         event: 'items-update',
       });
     } catch (err) {
-      console.log(`Error sending to client ${client.id}:`, err);
+      // console.log(`Error sending to client ${client.id}:`, err);
       clients.delete(client);
     }
   }
