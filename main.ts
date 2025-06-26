@@ -20,8 +20,10 @@ const collection = db.collection('items')
 const changeStream = collection.watch();
 
 changeStream.on('change', async (change) => {
-  const data = 'fullDocument' in change && change.fullDocument ? change.fullDocument.item : null;
-  await broadcast({ data, event: 'items-update'})
+  if (change.operationType === 'insert' || change.operationType === 'replace') {
+    const text = change.fullDocument.text;
+    await broadcast({ data: text, event: 'items-update' });
+  }
 });
 
 const app = new Hono()
@@ -32,20 +34,22 @@ app.use(logger())
 app.get('*', serveStatic({ root: './static' }))
 
 const itemSchema = z.object({
-  item: z.string().min(1, 'Item is required').max(100, 'Item must be less than 100 characters'),
+  text: z.string().min(1, 'Text is required').max(100, 'Text must be less than 100 characters'),
   done: z.boolean().optional(),
 })
 
 app.post('/create', zValidator('form', itemSchema), async (c) => {
-  const { item } = c.req.valid('form')
-  await collection.insertOne({ item, createdAt: new Date() })
+  const { text } = c.req.valid('form')
+  console.log(`Creating item with text: ${text}`)
+  await collection.insertOne({ text, createdAt: new Date() })
   return c.body(null, 201)
 })
 
 app.get('/items', async (c) => {
   const pp = c.req.query('pp') ? parseInt(String(c.req.query('pp'))) : 10
   const items = (await collection.find().sort({ createdAt: -1 }).limit(pp).toArray()).reverse()
-  const html = items.map((item) => `<div class="item">${item.createdAt.toISOString()} - ${item.item}</div>`).join('')
+  const html = items.map((item) => `<div class="item">${item.createdAt.toISOString()} - ${item.text}</div>`).join('')
+  console.log(`html: ${html}`)
   return c.html(html)
 })
 
@@ -75,7 +79,7 @@ setInterval(async () => {
 
 Deno.serve(app.fetch)
 
-async function broadcast({ data, event }: { data: string | Record<string, unknown>; event: string }) {
+async function broadcast({ data, event }: { data: string; event: string }) {
   for (const client of clients) {
     try {
       await client.stream.writeSSE({

@@ -16,8 +16,8 @@
     <form hx-post="/create" 
           hx-swap="none" 
           hx-on::after-request="this.reset()">
-      <label for="item">New Item:</label>
-      <input type="text" id="item" name="item" required>
+      <label for="text">New Item Text:</label>
+      <input type="text" id="text" name="text" required>
       <button type="submit">Add</button>
     </form>
     <div hx-ext="sse" sse-connect="/sse" sse-swap="time-update"></div>

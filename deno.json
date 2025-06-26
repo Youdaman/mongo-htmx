@@ -2,7 +2,7 @@
   "imports": {
     "mongodb": "npm:mongodb",
     "hono": "npm:hono",
-    "zod": "npm:zod@^3.25.36",
+    "zod": "npm:zod",
     "@hono/zod-validator": "npm:@hono/zod-validator",
     "@std/dotenv": "jsr:@std/dotenv"
   },
