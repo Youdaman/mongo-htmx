@@ -7,7 +7,7 @@
   <title>HTMX + PicoCSS</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
   <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-  <!-- <script src="https://unpkg.com/htmx-ext-sse@2.2.2"></script> -->
+  <script src="https://unpkg.com/htmx-ext-sse@2.2.2"></script>
 </head>
 
 <body>
@@ -20,15 +20,15 @@
       <input type="text" id="item" name="item" required>
       <button type="submit">Add</button>
     </form>
-    <div id="items" 
+    <div hx-ext="sse" sse-connect="/sse" sse-swap="time-update"></div>
+    <!-- <div id="items" 
          hx-get="/items" 
          hx-trigger="load, itemAdded from:body" 
-         hx-swap="innerHTML"></div>
-    <!-- <div hx-ext="sse" sse-connect="/sse" sse-swap="items-update"></div>
-    <div hx-ext="sse" sse-connect="/sse" sse-swap="time-update"></div> -->
-    <!-- <div hx-ext="sse" sse-connect="/sse">
+         hx-swap="innerHTML"></div> -->
+    <!-- <div hx-ext="sse" sse-connect="/sse" sse-swap="items-update"></div> -->
+    <div hx-ext="sse" sse-connect="/sse">
       <div hx-get="/items?pp=5" hx-trigger="load,sse:items-update"></div>
-    </div> -->
+    </div>
   </main>
 </body>
 
