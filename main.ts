@@ -17,14 +17,14 @@ const dbName = 'realtime'
 await client.connect()
 const db = client.db(dbName)
 const collection = db.collection('items')
-const changeStream = collection.watch();
+const changeStream = collection.watch()
 
 changeStream.on('change', async (change) => {
   if (change.operationType === 'insert' || change.operationType === 'replace') {
-    const text = change.fullDocument.text;
-    await broadcast({ data: text, event: 'items-update' });
+    const text = change.fullDocument.text
+    await broadcast({ data: text, event: 'items-update' })
   }
-});
+})
 
 const app = new Hono()
 app.use(csrf())
@@ -53,29 +53,28 @@ app.get('/items', async (c) => {
   return c.html(html)
 })
 
-const clients = new Set<{ id: number; stream: SSEStreamingApi }>();
-let clientId = 0;
+const clients = new Set<{ id: number; stream: SSEStreamingApi }>()
+let clientId = 0
 
 app.get('/sse', (c) => {
   return streamSSE(c, async (stream) => {
-    const id = clientId++;
-    const client = { id, stream };
-    clients.add(client);
-    console.log(`Client added: ${id}, total clients: ${clients.size}`);
+    const id = clientId++
+    const client = { id, stream }
+    clients.add(client)
+    console.log(`Client added: ${id}, total clients: ${clients.size}`)
     stream.onAbort(() => {
-      console.log(`Client removed: ${id}`);
-      clients.delete(client);
-    });
-    // Keep the connection open until the client disconnects
-    await new Promise(() => { });
-  });
-});
+      console.log(`Client removed: ${id}`)
+      clients.delete(client)
+    })
+    await new Promise(() => { }) // keep connection open until client disconnects
+  })
+})
 
 // Broadcast updates to all clients at a fixed interval
 setInterval(async () => {
-  const data = `Time: ${new Date().toISOString()}`;
+  const data = `Time: ${new Date().toISOString()}`
   await broadcast({ data, event: 'time-update'})
-}, 1000);
+}, 1000)
 
 Deno.serve(app.fetch)
 
@@ -85,10 +84,10 @@ async function broadcast({ data, event }: { data: string; event: string }) {
       await client.stream.writeSSE({
         data,
         event,
-      });
+      })
     } catch (err) {
-      console.log(`Error sending to client ${client.id}:`, err);
-      clients.delete(client);
+      console.log(`Error sending to client ${client.id}:`, err)
+      clients.delete(client)
     }
   }
 }
