@@ -10,7 +10,7 @@ import { serveStatic } from 'hono/deno'
 import { MongoClient } from 'mongodb'
 import '@std/dotenv/load'
 
-// TODO refactor into separate file
+// mongo connection, collection and change stream setup
 const url = 'mongodb://127.0.0.1:27017'
 const client = new MongoClient(url)
 const dbName = 'realtime'
@@ -26,6 +26,7 @@ changeStream.on('change', async (change) => {
   }
 })
 
+// setup hono app + middleware
 const app = new Hono()
 app.use(csrf())
 app.use(secureHeaders())
@@ -33,11 +34,13 @@ app.use(compress())
 app.use(logger())
 app.get('*', serveStatic({ root: './static' }))
 
+// Zod schema for items
 const itemSchema = z.object({
   text: z.string().min(1, 'Text is required').max(100, 'Text must be less than 100 characters'),
   done: z.boolean().optional(),
 })
 
+// create item after validating form data
 app.post('/create', zValidator('form', itemSchema), async (c) => {
   const { text } = c.req.valid('form')
   console.log(`Creating item with text: ${text}`)
@@ -45,6 +48,7 @@ app.post('/create', zValidator('form', itemSchema), async (c) => {
   return c.body(null, 201)
 })
 
+// return HTML for items, reverse chronological order, paginated
 app.get('/items', async (c) => {
   const pp = c.req.query('pp') ? parseInt(String(c.req.query('pp'))) : 10
   const items = (await collection.find().sort({ createdAt: -1 }).limit(pp).toArray()).reverse()
@@ -53,9 +57,11 @@ app.get('/items', async (c) => {
   return c.html(html)
 })
 
+// SSE client set
 const clients = new Set<{ id: number; stream: SSEStreamingApi }>()
 let clientId = 0
 
+// SSE connection endpoint
 app.get('/sse', (c) => {
   return streamSSE(c, async (stream) => {
     const id = clientId++
@@ -70,7 +76,7 @@ app.get('/sse', (c) => {
   })
 })
 
-// Broadcast updates to all clients at a fixed interval
+// broadcast time update every second 
 setInterval(async () => {
   const data = `Time: ${new Date().toISOString()}`
   await broadcast({ data, event: 'time-update'})
@@ -78,6 +84,7 @@ setInterval(async () => {
 
 Deno.serve(app.fetch)
 
+// send data/event to all connected clients
 async function broadcast({ data, event }: { data: string; event: string }) {
   for (const client of clients) {
     try {
