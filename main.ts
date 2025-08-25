@@ -19,13 +19,6 @@ const db = client.db(dbName)
 const collection = db.collection('items')
 const changeStream = collection.watch()
 
-changeStream.on('change', async (change) => {
-  if (change.operationType === 'insert' || change.operationType === 'replace') {
-    const text = change.fullDocument.text
-    await broadcast({ data: text, event: 'items-update' })
-  }
-})
-
 // setup hono app + middleware
 const app = new Hono()
 app.use(csrf())
@@ -34,7 +27,7 @@ app.use(compress())
 app.use(logger())
 app.get('*', serveStatic({ root: './static' }))
 
-// Zod schema for items
+// zod schema for items
 const itemSchema = z.object({
   text: z.string().min(1, 'Text is required').max(100, 'Text must be less than 100 characters'),
   done: z.boolean().optional(),
@@ -48,7 +41,7 @@ app.post('/create', zValidator('form', itemSchema), async (c) => {
   return c.body(null, 201)
 })
 
-// return HTML for items, reverse chronological order, paginated
+// return html for items, reverse chronological order, paginated
 app.get('/items', async (c) => {
   const pp = c.req.query('pp') ? parseInt(String(c.req.query('pp'))) : 10
   const items = (await collection.find().sort({ createdAt: -1 }).limit(pp).toArray()).reverse()
@@ -57,11 +50,11 @@ app.get('/items', async (c) => {
   return c.html(html)
 })
 
-// SSE client set
+// sse clients
 const clients = new Set<{ id: number; stream: SSEStreamingApi }>()
 let clientId = 0
 
-// SSE connection endpoint
+// sse connection endpoint
 app.get('/sse', (c) => {
   return streamSSE(c, async (stream) => {
     const id = clientId++
@@ -75,14 +68,6 @@ app.get('/sse', (c) => {
     await new Promise(() => { }) // keep connection open until client disconnects
   })
 })
-
-// broadcast time update every second 
-setInterval(async () => {
-  const data = `Time: ${new Date().toISOString()}`
-  await broadcast({ data, event: 'time-update'})
-}, 1000)
-
-Deno.serve(app.fetch)
 
 // send data/event to all connected clients
 async function broadcast({ data, event }: { data: string; event: string }) {
@@ -98,3 +83,19 @@ async function broadcast({ data, event }: { data: string; event: string }) {
     }
   }
 }
+
+// broadcast time update every second via sse
+setInterval(async () => {
+  const data = `Time: ${new Date().toISOString()}`
+  await broadcast({ data, event: 'time-update'})
+}, 1000)
+
+// broadcast mongo change stream via sse
+changeStream.on('change', async (change) => {
+  if (change.operationType === 'insert' || change.operationType === 'replace') {
+    const text = change.fullDocument.text
+    await broadcast({ data: text, event: 'items-update' })
+  }
+})
+
+Deno.serve(app.fetch)
