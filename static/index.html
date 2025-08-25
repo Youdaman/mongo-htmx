@@ -25,14 +25,14 @@
             <button type="submit">Add</button>
           </form>
         </div>
+        <div hx-ext="sse" sse-connect="/sse">
+          <div hx-get="/items?pp=5" hx-trigger="load,sse:items-update"></div>
+        </div>
         <!-- <div id="items" 
             hx-get="/items" 
             hx-trigger="load, itemAdded from:body" 
             hx-swap="innerHTML"></div> -->
         <!-- <div hx-ext="sse" sse-connect="/sse" sse-swap="items-update"></div> -->
-        <div hx-ext="sse" sse-connect="/sse">
-          <div hx-get="/items?pp=5" hx-trigger="load,sse:items-update"></div>
-        </div>
       </section>
       <section>
         <hgroup>
