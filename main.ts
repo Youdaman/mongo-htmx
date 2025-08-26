@@ -44,7 +44,7 @@ app.post('/create', zValidator('form', itemSchema), async (c) => {
 // return html for items, reverse chronological order, paginated
 app.get('/items', async (c) => {
   const pp = c.req.query('pp') ? parseInt(String(c.req.query('pp'))) : 10
-  const items = (await collection.find().sort({ createdAt: -1 }).limit(pp).toArray()).reverse()
+  const items = await collection.find().sort({ createdAt: 1 }).limit(pp).toArray()
   const html = items.map((item) => `<div class="item">${item.createdAt.toISOString()} - ${item.text}</div>`).join('')
   console.log(`html: ${html}`)
   return c.html(html)
